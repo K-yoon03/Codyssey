@@ -13,6 +13,9 @@ try:
 
     line = f.readlines()
 
+    for i in reversed(line): # 역순으로 나열
+        print(i)
+
     for i in line[1:]:
         data = i.strip().split(',')
         time = data[0]
