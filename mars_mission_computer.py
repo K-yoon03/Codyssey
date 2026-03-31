@@ -1,6 +1,8 @@
+from datetime import datetime
 import random
 
 class DummySensor:
+    global filename
     def __init__(self): #generator : JAVA와 다르게 필드로 선언하고 Generator에서 초기화를 하는게 아닌
         self.env_values = {         # 선언, 초기화를 한 번에 진행
             'mars_base_internal_temperature': 0.0,
@@ -10,7 +12,7 @@ class DummySensor:
             'mars_base_internal_co2': 0.0,
             'mars_base_internal_oxygen': 0.0
         }
-    def EnvironSet(self):
+    def set_env(self):
         self.env_values['mars_base_internal_temperature'] = round(random.uniform(18, 30), 2) # 실수값이라 Uniform 사용
         self.env_values['mars_base_external_temperature'] = round(random.uniform(0, 21), 2) # 일반적으로 random.randint << 정수형
         self.env_values['mars_base_internal_humidity'] = round(random.uniform(50, 60), 2) # 2번째자리에서 round
@@ -18,15 +20,27 @@ class DummySensor:
         self.env_values['mars_base_internal_co2'] = round(random.uniform(0.02, 0.1), 4)
         self.env_values['mars_base_internal_oxygen'] = round(random.uniform(4, 7), 2)
 
-    def getEnvironment(self): #getter Method
+    def get_env(self): #getter Method
+        now = datetime.now()
+        timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+
+        values = []
+        for value in self.env_values.values():
+            values.append(str(value))
+            log_line = f'{timestamp}, ' + ', '.join(values) + '\n'
+
+    
+        with open('mars_log.txt', 'a') as file:
+            file.write(log_line)
+
         return self.env_values # Python에서는 self를 명시 (객체에서 부르는 메소드라도 본인 객체는 넘어감을 명시)
                                 # JAVA에선 없는 개념 : JAVA는 자동으로 가려줌.
 
 if __name__ == '__main__':
     DummySensor = DummySensor()
 
-    DummySensor.EnvironSet()
-    CurrentEnvironment = DummySensor.getEnvironment()
+    DummySensor.set_env()
+    CurrentEnvironment = DummySensor.get_env()
 
     for key, value in CurrentEnvironment.items():
         print(f'{key} : {value}')
